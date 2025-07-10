@@ -17,7 +17,7 @@ pub fn init_db() {
 }
 
 pub fn save_tickets(tickets: &Vec<Ticket>) {
-    let conn = Connection::open(DB_PATH).expect("Failed to open DB");
+    let mut conn = Connection::open(DB_PATH).expect("Failed to open DB");
     let tx = conn.transaction().expect("Failed to begin transaction");
     tx.execute("DELETE FROM tickets", []).expect("Failed to clear table");
     {

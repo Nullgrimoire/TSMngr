@@ -8,7 +8,7 @@ use std::io::{self, Write};
 
 
 fn main() {
-    init_db
+    init_db();
     let mut tickets = load_tickets();
 
     loop {
