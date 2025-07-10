@@ -16,11 +16,5 @@
     "title": "Broken Foot",
     "description": "the footer is broken lol",
     "status": "Open"
-  },
-  {
-    "id": "87180c2f-7f34-423e-bf47-d0ef4d8794ae",
-    "title": "Hello",
-    "description": "great project would be to make a hello world in rust lolololol",
-    "status": "Closed"
   }
 ]
