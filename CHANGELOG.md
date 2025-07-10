@@ -6,6 +6,11 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [v1.1.0-alpha] - 2025-07-11
+### Added
+- 🔗 SQLite database integration for persistent storage
+- 🏗️ Initial core setup improvements
+
 ## [v0.1.4] - 2025-07-10
 ### Added
 - 🛠️ GitHub Actions workflow for automated cross-platform builds (Linux & Windows)

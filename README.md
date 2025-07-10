@@ -25,7 +25,7 @@ Just download the appropriate `.zip`, extract it, and run the binary (`tsmngr` o
 - 📋 View all tickets in a list
 - 🛠️ Update or delete specific tickets
 - 🧾 Export to `tickets.md` for backup/sharing
-- 💾 JSON-backed persistent storage
+- 💾 SQlite persistent storage
 - 🧙‍♂️ GitHub Actions builds for Windows & Linux
 
 ---
@@ -62,7 +62,7 @@ Binary output will be in:
 
 ## 📁 Data Storage
 
-- Ticket data is saved in `tickets.json`
+- Ticket data is saved in `tickets.db`
 - Exports go to `tickets.md`
 
 ---

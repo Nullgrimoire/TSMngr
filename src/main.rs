@@ -2,12 +2,13 @@ mod ticket;
 mod storage;
 
 use ticket::Ticket;
-use storage::{save_tickets, load_tickets};
+use storage::{init_db, load_tickets, save_tickets};
 
 use std::io::{self, Write};
 
 
 fn main() {
+    init_db
     let mut tickets = load_tickets();
 
     loop {
