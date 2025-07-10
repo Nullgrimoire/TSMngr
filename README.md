@@ -1,58 +1,72 @@
-# 🧾 Ticket System Manager (Rust CLI)
+# 🧾 Ticket System Manager (TSMngr)
 
-A command-line ticket tracker built in Rust.  
-Create, update, delete, and export tickets to markdown with persistent storage.
+A command-line ticket tracker built in Rust.
 
----
-
-## 🚀 Features
-
-- 🎟️ Create new tickets with title & description
-- 📋 View all tickets
-- 🔁 Update ticket status (Open, In Progress, Closed)
-- 🗑️ Delete tickets
-- 📄 Export tickets to `tickets.md`
-- 💾 Auto-saves to `tickets.json`
+Create, view, update, delete, and export tickets to Markdown with persistent file-based storage.
 
 ---
 
-## 🛠️ Installation
+## 🚀 Download
 
-### 📦 Build from source:
+Precompiled binaries available for:
+
+- 🐧 **Linux**
+- 🪟 **Windows**
+
+📥 **[Latest Releases →](https://github.com/Nullgrimoire/TSMngr/releases)**
+
+Just download the appropriate `.zip`, extract it, and run the binary (`tsmngr` or `tsmngr.exe`).
+
+---
+
+## ✨ Features
+
+- 🎫 Create new tickets with title & description
+- 📋 View all tickets in a list
+- 🛠️ Update or delete specific tickets
+- 🧾 Export to `tickets.md` for backup/sharing
+- 💾 JSON-backed persistent storage
+- 🧙‍♂️ GitHub Actions builds for Windows & Linux
+
+---
+
+## 📦 Usage
+
+Run from terminal:
 
 ```bash
-git clone https://github.com/Nullgrimoire/TSMngr.git
-cd TSMngr
+./tsmngr
+```
+
+On Windows:
+
+```powershell
+.\tsmngr.exe
+```
+
+---
+
+## 🛠 Build from Source
+
+```bash
 cargo build --release
-./target/release/tsmngr
 ```
 
-Or just download the compiled binary from [Releases](https://github.com/Nullgrimoire/TSMngr/releases/tag/v0.1.0).
+Binary output will be in:
 
----
-
-## 🧪 Sample Output
-
-```
-🎟️ Ticket System Manager
-1️⃣ Create Ticket
-2️⃣ View All Tickets
-3️⃣ Update Ticket Status
-4️⃣ Delete Ticket
-5️⃣ Export Tickets to Markdown
-6️⃣ Exit
+```text
+./target/release/
 ```
 
 ---
 
-## 📁 Data Files
+## 📁 Data Storage
 
-- `tickets.json`: Saved ticket data
-- `tickets.md`: Optional exported markdown
+- Ticket data is saved in `tickets.json`
+- Exports go to `tickets.md`
 
 ---
 
-## ✨ Built With
+## 📜 License
 
-- 🦀 Rust
-- `serde`, `uuid`, `serde_json`
+MIT © Nullgrimoire
