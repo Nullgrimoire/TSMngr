@@ -31,11 +31,11 @@ jobs:
       - name: 📦 Build binary
         run: cargo build --release --target ${{ matrix.target }}
 
-      - name: 📂 Prepare release folder
+      - name: Prepare release folder
         run: |
           mkdir release
-          cp README.md LICENSE release/
-          cp target/${{ matrix.target }}/release/${{ matrix.bin_name }} release/
+          Copy-Item README.md, LICENSE -Destination release
+        shell: pwsh
 
       - name: 📦 Zip release files
         run: |
