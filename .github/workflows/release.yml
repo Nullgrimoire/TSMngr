@@ -1,0 +1,50 @@
+name: Release Builds
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            bin_name: tsmngr
+            artifact_name: TSMngr-${{ github.ref_name }}-Linux.zip
+          - os: windows-latest
+            target: x86_64-pc-windows-gnu
+            bin_name: tsmngr.exe
+            artifact_name: TSMngr-${{ github.ref_name }}-Windows.zip
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🛠️ Install Rust target
+        run: rustup target add ${{ matrix.target }}
+
+      - name: 📦 Build binary
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: 📂 Prepare release folder
+        run: |
+          mkdir release
+          cp README.md LICENSE release/
+          cp target/${{ matrix.target }}/release/${{ matrix.bin_name }} release/
+
+      - name: 📦 Zip release files
+        run: |
+          cd release
+          zip ../${{ matrix.artifact_name }} * || powershell Compress-Archive * ../${{ matrix.artifact_name }}
+
+      - name: 🚀 Upload release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.artifact_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
