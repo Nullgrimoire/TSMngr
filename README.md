@@ -27,7 +27,7 @@ cargo build --release
 ./target/release/tsmngr
 ```
 
-Or just download the compiled binary from [Releases](#).
+Or just download the compiled binary from [Releases](https://github.com/Nullgrimoire/TSMngr/releases/tag/v0.1.0).
 
 ---
 
