@@ -37,10 +37,10 @@ jobs:
           Copy-Item README.md, LICENSE -Destination release
         shell: pwsh
 
-      - name: 📦 Zip release files
+      - name: 🧙‍♂️ Zip release files (Windows)
+        shell: pwsh
         run: |
-          cd release
-          zip ../${{ matrix.artifact_name }} * || powershell Compress-Archive * ../${{ matrix.artifact_name }}
+          Compress-Archive -Path ./release/* -DestinationPath "./TSMgr-v${{ github.ref_name }}-Windows.zip"
 
       - name: 🚀 Upload release asset
         uses: softprops/action-gh-release@v2
