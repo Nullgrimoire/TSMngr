@@ -15,11 +15,11 @@ jobs:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
             bin_name: tsmngr
-            artifact_name: TSMngr-${{ github.ref_name }}-Linux.zip
+            ext: Linux
           - os: windows-latest
             target: x86_64-pc-windows-gnu
             bin_name: tsmngr.exe
-            artifact_name: TSMngr-${{ github.ref_name }}-Windows.zip
+            ext: Windows
 
     steps:
       - name: 📥 Checkout code
@@ -31,20 +31,32 @@ jobs:
       - name: 📦 Build binary
         run: cargo build --release --target ${{ matrix.target }}
 
-      - name: Prepare release folder
+      - name: 🗃️ Prepare release folder
         run: |
           mkdir release
-          Copy-Item README.md, LICENSE -Destination release
+          cp README.md LICENSE target/${{ matrix.target }}/release/${{ matrix.bin_name }} release/
+        if: runner.os != 'Windows'
+
+      - name: 🗃️ Prepare release folder (Windows)
         shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path release
+          Copy-Item README.md, LICENSE -Destination release
+          Copy-Item "target\${{ matrix.target }}\release\${{ matrix.bin_name }}" -Destination release
+        if: runner.os == 'Windows'
+
+      - name: 🧙‍♂️ Zip release files (Linux/macOS)
+        run: zip -r TSMngr-${{ github.ref_name }}-${{ matrix.ext }}.zip release
+        if: runner.os != 'Windows'
 
       - name: 🧙‍♂️ Zip release files (Windows)
         shell: pwsh
-        run: |
-          Compress-Archive -Path ./release/* -DestinationPath "./TSMgr-v${{ github.ref_name }}-Windows.zip"
+        run: Compress-Archive -Path release\* -DestinationPath TSMngr-${{ github.ref_name }}-${{ matrix.ext }}.zip
+        if: runner.os == 'Windows'
 
       - name: 🚀 Upload release asset
         uses: softprops/action-gh-release@v2
         with:
-          files: ${{ matrix.artifact_name }}
+          files: TSMngr-${{ github.ref_name }}-${{ matrix.ext }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
