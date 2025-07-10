@@ -21,13 +21,13 @@ Create, update, delete, and export tickets to markdown with persistent storage.
 ### 📦 Build from source:
 
 ```bash
-git clone https://github.com/your-username/TSMngr.git
+git clone https://github.com/Nullgrimoire/TSMngr.git
 cd TSMngr
 cargo build --release
 ./target/release/tsmngr
 ```
 
-Or just download the compiled binary from [Releases](#) (if you're providing one).
+Or just download the compiled binary from [Releases](#).
 
 ---
 
