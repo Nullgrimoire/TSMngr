@@ -3,8 +3,25 @@ use crate::ticket::Ticket;
 
 const DB_PATH: &str = "tickets.db";
 
+/// Returns a connection to the SQLite database. This helper centralizes
+/// creation of the `rusqlite` connection so callers don't have to repeat the
+/// open logic everywhere.
+pub fn get_connection() -> Connection {
+    Connection::open(DB_PATH).expect("Failed to open DB")
+}
+
 pub fn init_db() {
-    let conn = Connection::open(DB_PATH).expect("Failed to open DB");
+    let conn = get_connection();
+
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS users (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            email TEXT NOT NULL
+        )",
+        [],
+    ).expect("Failed to create users table");
+
     conn.execute(
         "CREATE TABLE IF NOT EXISTS tickets (
             id TEXT PRIMARY KEY,
@@ -13,11 +30,21 @@ pub fn init_db() {
             status TEXT NOT NULL
         )",
         [],
-    ).expect("Failed to create table");
+    ).expect("Failed to create tickets table");
+
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS logs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ticket_id TEXT NOT NULL,
+            action TEXT NOT NULL,
+            timestamp TEXT NOT NULL
+        )",
+        [],
+    ).expect("Failed to create logs table");
 }
 
 pub fn save_tickets(tickets: &Vec<Ticket>) {
-    let mut conn = Connection::open(DB_PATH).expect("Failed to open DB");
+    let mut conn = get_connection();
     let tx = conn.transaction().expect("Failed to begin transaction");
     tx.execute("DELETE FROM tickets", []).expect("Failed to clear table");
     {
@@ -34,7 +61,7 @@ pub fn save_tickets(tickets: &Vec<Ticket>) {
 
 pub fn load_tickets() -> Vec<Ticket> {
     init_db();
-    let conn = Connection::open(DB_PATH).expect("Failed to open DB");
+    let conn = get_connection();
     let mut stmt = conn
         .prepare("SELECT id, title, description, status FROM tickets")
         .expect("Failed to prepare query");
