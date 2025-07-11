@@ -49,3 +49,7 @@ ehthumbs.db
 .circleci/
 .gitlab-ci.yml
 .travis.yml
+
+# Windows resource and build artifacts
+# *.rc
+# /build.rs
