@@ -31,17 +31,29 @@ jobs:
       - name: 📦 Build binary
         run: cargo build --release --target ${{ matrix.target }}
 
+      - name: 🧹 Clean release folder (Linux/macOS)
+        run: rm -rf release
+        if: runner.os != 'Windows'
+
+      - name: 🧹 Clean release folder (Windows)
+        shell: pwsh
+        run: Remove-Item -Recurse -Force release -ErrorAction SilentlyContinue
+        if: runner.os == 'Windows'
+
       - name: 🗃️ Prepare release folder
         run: |
           mkdir release
-          cp README.md LICENSE target/${{ matrix.target }}/release/${{ matrix.bin_name }} release/
+          cp README.md LICENSE CHANGELOG.md release/
+          if [ -f tickets.md ]; then cp tickets.md release/; fi
+          cp target/${{ matrix.target }}/release/${{ matrix.bin_name }} release/
         if: runner.os != 'Windows'
 
       - name: 🗃️ Prepare release folder (Windows)
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Path release
-          Copy-Item README.md, LICENSE -Destination release
+          Copy-Item README.md, LICENSE, CHANGELOG.md -Destination release
+          if (Test-Path tickets.md) { Copy-Item tickets.md -Destination release }
           Copy-Item "target\${{ matrix.target }}\release\${{ matrix.bin_name }}" -Destination release
         if: runner.os == 'Windows'
 
