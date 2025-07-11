@@ -1,6 +1,6 @@
 [package]
 name = "tsmngr"
-version = "0.1.0"
+version = "1.1.0-Alpha"
 edition = "2021"
 
 authors = ["Nullgrimoire weeks.it.solutions@gmail.com"]
@@ -13,3 +13,4 @@ readme = "README.md"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 uuid = { version = "1.7", features = ["v4"] }
+rusqlite = { version = "0.30", features = ["bundled"] }

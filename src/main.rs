@@ -1,14 +1,29 @@
+//! Main entry point and interactive menu for the Ticket System Manager.
+
 mod ticket;
 mod storage;
+mod cli;
+mod error;
 
 use ticket::Ticket;
-use storage::{save_tickets, load_tickets};
+use storage::{init_db, load_tickets, save_tickets};
 
 use std::io::{self, Write};
 
-
+/// The main function initializes the database, handles CLI arguments, and runs the interactive menu loop.
 fn main() {
-    let mut tickets = load_tickets();
+    let _ = init_db();
+    if cli::handle_args() {
+        return;
+    }
+
+    let mut tickets = match load_tickets() {
+        Ok(t) => t,
+        Err(e) => {
+            eprintln!("Failed to load tickets: {}", e);
+            Vec::new()
+        }
+    };
 
     loop {
         clear_screen();
@@ -35,7 +50,7 @@ fn main() {
                 println!("\n✅ Ticket created: {:?}", ticket);
                 pause();
                 tickets.push(ticket);
-                save_tickets(&tickets);
+                let _ = save_tickets(&tickets);
             },
             "2" => {
                 clear_screen();
@@ -55,12 +70,10 @@ fn main() {
                     println!("📭 No tickets to update.");
                     continue;
                 }
-            
                 println!("\n🔁 Update Ticket Status\n-------------------");
                 for (i, ticket) in tickets.iter().enumerate() {
                     println!("{}. {} [{}]", i + 1, ticket.title, color_status(&ticket.status));
                 }
-            
                 let input = prompt("Enter ticket number: ");
                 let index = match input.trim().parse::<usize>() {
                     Ok(num) if num > 0 && num <= tickets.len() => num - 1,
@@ -69,12 +82,10 @@ fn main() {
                         continue;
                     }
                 };
-            
                 println!("\nSelect new status:");
                 println!("1. Open");
                 println!("2. In Progress");
                 println!("3. Closed");
-            
                 let status_choice = prompt("Choice: ");
                 let new_status = match status_choice.trim() {
                     "1" => "Open",
@@ -85,9 +96,8 @@ fn main() {
                         continue;
                     }
                 };
-            
                 tickets[index].status = new_status.to_string();
-                save_tickets(&tickets);
+                let _ = save_tickets(&tickets);
                 println!("\n✅ Ticket updated.");
                 pause();
             },
@@ -98,12 +108,10 @@ fn main() {
                     pause();
                     continue;
                 }
-            
                 println!("\n🗑️ Delete a Ticket\n-------------------");
                 for (i, ticket) in tickets.iter().enumerate() {
                     println!("{}. {} [{}]", i + 1, ticket.title, color_status(&ticket.status));
                 }
-            
                 let input = prompt("Enter ticket number to delete: ");
                 let index: usize = match input.trim().parse::<usize>() {
                     Ok(num) if num > 0 && num <= tickets.len() => num - 1,
@@ -113,9 +121,8 @@ fn main() {
                         continue;
                     }
                 };
-            
                 let removed = tickets.remove(index);
-                save_tickets(&tickets);
+                let _ = save_tickets(&tickets);
                 println!("\n🗑️ Deleted: {} [{}]", removed.title, color_status(&removed.status));
                 pause();
             },
@@ -127,16 +134,18 @@ fn main() {
             },
             "6" => {
                 println!("💾 Saving and exiting...");
-                save_tickets(&tickets);
+                let _ = save_tickets(&tickets);
                 break;
             },
             _ => {
                 println!("❌ Invalid option.");
+                pause();
             }
         }
     }
 }
 
+/// Prompt the user for input with a message and return the trimmed response.
 fn prompt(message: &str) -> String {
     print!("{}", message);
     io::stdout().flush().unwrap();
@@ -146,11 +155,13 @@ fn prompt(message: &str) -> String {
     input.trim().to_string()
 }
 
-//utility functions
+/// Clear the terminal screen (works on Unix/Linux/macOS).
 fn clear_screen() {
     // Works on Unix (Linux/macOS)
     print!("\x1B[2J\x1B[1;1H");
 }
+
+/// Return a colored string for the ticket status.
 fn color_status(status: &str) -> String {
     match status {
         "Open" => format!("\x1b[32m{}\x1b[0m", status),         // Green
@@ -159,15 +170,18 @@ fn color_status(status: &str) -> String {
         _ => status.to_string(),
     }
 }
+
+/// Pause and wait for the user to press Enter.
 fn pause() {
     println!("\nPress Enter to return to menu...");
     let _ = std::io::stdin().read_line(&mut String::new());
 }
 
-//Markdown Export
-use std::fs::File;
-
+/// Export the given tickets to a Markdown file (tickets.md).
 fn export_to_markdown(tickets: &[Ticket]) {
+    use std::fs::File;
+    use std::io::Write;
+
     let mut file = File::create("tickets.md").expect("Failed to create file");
 
     writeln!(file, "# 🎟️ Ticket List\n").unwrap();

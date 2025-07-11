@@ -20,3 +20,4 @@ tickets.json
 *.log
 .idea/
 .vscode/
+*.db
