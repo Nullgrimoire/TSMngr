@@ -32,9 +32,7 @@ tickets.json
 .vscode/
 *.db
 
-# Windows resource and build artifacts
-*.rc
-/build.rs
+
 
 # OS/Editor/IDE files
 Thumbs.db
