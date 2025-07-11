@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 use uuid::Uuid;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Ticket {
     pub id: String,
     pub title: String,

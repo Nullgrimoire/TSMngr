@@ -1,5 +1,6 @@
 mod ticket;
 mod storage;
+mod cli;
 
 use ticket::Ticket;
 use storage::{init_db, load_tickets, save_tickets};
@@ -9,6 +10,10 @@ use std::io::{self, Write};
 
 fn main() {
     init_db();
+    if cli::handle_args() {
+        return;
+    }
+
     let mut tickets = load_tickets();
 
     loop {
