@@ -53,6 +53,13 @@ pub fn handle_args() -> bool {
                     }
                     true
                 }
+                Some("seed") => {
+                    use crate::storage::seed_sample_data;
+                    if handle_db_err(seed_sample_data()).is_some() {
+                        println!("Sample users and tickets inserted.");
+                    }
+                    true
+                }
                 _ => {
                     print_ticket_help();
                     true

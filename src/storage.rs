@@ -72,3 +72,26 @@ pub fn load_tickets() -> Result<Vec<Ticket>, Box<dyn Error>> {
     let tickets = ticket_iter.filter_map(|t| t.ok()).collect();
     Ok(tickets)
 }
+
+pub fn seed_sample_data() -> Result<(), Box<dyn Error>> {
+    let conn = get_connection()?;
+    // Insert sample users
+    conn.execute(
+        "INSERT OR IGNORE INTO users (id, name, email) VALUES (?1, ?2, ?3)",
+        params!["user1", "Alice Example", "alice@example.com"],
+    )?;
+    conn.execute(
+        "INSERT OR IGNORE INTO users (id, name, email) VALUES (?1, ?2, ?3)",
+        params!["user2", "Bob Example", "bob@example.com"],
+    )?;
+    // Insert sample tickets
+    conn.execute(
+        "INSERT OR IGNORE INTO tickets (id, title, description, status) VALUES (?1, ?2, ?3, ?4)",
+        params!["ticket1", "Sample Ticket 1", "This is a sample ticket.", "Open"],
+    )?;
+    conn.execute(
+        "INSERT OR IGNORE INTO tickets (id, title, description, status) VALUES (?1, ?2, ?3, ?4)",
+        params!["ticket2", "Sample Ticket 2", "Another sample ticket.", "In Progress"],
+    )?;
+    Ok(())
+}
