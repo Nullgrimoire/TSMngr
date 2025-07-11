@@ -1,6 +1,7 @@
 mod ticket;
 mod storage;
 mod cli;
+mod error;
 
 use ticket::Ticket;
 use storage::{init_db, load_tickets, save_tickets};
@@ -9,12 +10,18 @@ use std::io::{self, Write};
 
 
 fn main() {
-    init_db();
+    let _ = init_db();
     if cli::handle_args() {
         return;
     }
 
-    let mut tickets = load_tickets();
+    let mut tickets = match load_tickets() {
+        Ok(t) => t,
+        Err(e) => {
+            eprintln!("Failed to load tickets: {}", e);
+            Vec::new()
+        }
+    };
 
     loop {
         clear_screen();
@@ -41,7 +48,7 @@ fn main() {
                 println!("\n✅ Ticket created: {:?}", ticket);
                 pause();
                 tickets.push(ticket);
-                save_tickets(&tickets);
+                let _ = save_tickets(&tickets);
             },
             "2" => {
                 clear_screen();
@@ -61,12 +68,10 @@ fn main() {
                     println!("📭 No tickets to update.");
                     continue;
                 }
-            
                 println!("\n🔁 Update Ticket Status\n-------------------");
                 for (i, ticket) in tickets.iter().enumerate() {
                     println!("{}. {} [{}]", i + 1, ticket.title, color_status(&ticket.status));
                 }
-            
                 let input = prompt("Enter ticket number: ");
                 let index = match input.trim().parse::<usize>() {
                     Ok(num) if num > 0 && num <= tickets.len() => num - 1,
@@ -75,12 +80,10 @@ fn main() {
                         continue;
                     }
                 };
-            
                 println!("\nSelect new status:");
                 println!("1. Open");
                 println!("2. In Progress");
                 println!("3. Closed");
-            
                 let status_choice = prompt("Choice: ");
                 let new_status = match status_choice.trim() {
                     "1" => "Open",
@@ -91,9 +94,8 @@ fn main() {
                         continue;
                     }
                 };
-            
                 tickets[index].status = new_status.to_string();
-                save_tickets(&tickets);
+                let _ = save_tickets(&tickets);
                 println!("\n✅ Ticket updated.");
                 pause();
             },
@@ -104,12 +106,10 @@ fn main() {
                     pause();
                     continue;
                 }
-            
                 println!("\n🗑️ Delete a Ticket\n-------------------");
                 for (i, ticket) in tickets.iter().enumerate() {
                     println!("{}. {} [{}]", i + 1, ticket.title, color_status(&ticket.status));
                 }
-            
                 let input = prompt("Enter ticket number to delete: ");
                 let index: usize = match input.trim().parse::<usize>() {
                     Ok(num) if num > 0 && num <= tickets.len() => num - 1,
@@ -119,9 +119,8 @@ fn main() {
                         continue;
                     }
                 };
-            
                 let removed = tickets.remove(index);
-                save_tickets(&tickets);
+                let _ = save_tickets(&tickets);
                 println!("\n🗑️ Deleted: {} [{}]", removed.title, color_status(&removed.status));
                 pause();
             },
@@ -133,11 +132,12 @@ fn main() {
             },
             "6" => {
                 println!("💾 Saving and exiting...");
-                save_tickets(&tickets);
+                let _ = save_tickets(&tickets);
                 break;
             },
             _ => {
                 println!("❌ Invalid option.");
+                pause();
             }
         }
     }

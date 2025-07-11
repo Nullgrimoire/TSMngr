@@ -1,7 +1,6 @@
 use rusqlite::{params, Connection};
 use crate::ticket::Ticket;
 use std::error::Error;
-use crate::error::handle_db_err;
 
 const DB_PATH: &str = "tickets.db";
 
