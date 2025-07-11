@@ -4,9 +4,11 @@ mod ticket;
 mod storage;
 mod cli;
 mod error;
+mod utils;
 
 use ticket::Ticket;
 use storage::{init_db, load_tickets, save_tickets};
+use utils::{prompt, export_to_markdown};
 
 use std::io::{self, Write};
 
@@ -145,16 +147,6 @@ fn main() {
     }
 }
 
-/// Prompt the user for input with a message and return the trimmed response.
-fn prompt(message: &str) -> String {
-    print!("{}", message);
-    io::stdout().flush().unwrap();
-
-    let mut input = String::new();
-    io::stdin().read_line(&mut input).unwrap();
-    input.trim().to_string()
-}
-
 /// Clear the terminal screen (works on Unix/Linux/macOS).
 fn clear_screen() {
     // Works on Unix (Linux/macOS)
@@ -175,26 +167,4 @@ fn color_status(status: &str) -> String {
 fn pause() {
     println!("\nPress Enter to return to menu...");
     let _ = std::io::stdin().read_line(&mut String::new());
-}
-
-/// Export the given tickets to a Markdown file (tickets.md).
-fn export_to_markdown(tickets: &[Ticket]) {
-    use std::fs::File;
-    use std::io::Write;
-
-    let mut file = File::create("tickets.md").expect("Failed to create file");
-
-    writeln!(file, "# 🎟️ Ticket List\n").unwrap();
-
-    for (i, ticket) in tickets.iter().enumerate() {
-        writeln!(file, "## {}. {}\n", i + 1, ticket.title).unwrap();
-        writeln!(file, "- **ID**: `{}`", ticket.id).unwrap();
-        writeln!(file, "- **Status**: {}", ticket.status).unwrap();
-        writeln!(file, "- **Description**: {}", ticket.description).unwrap();
-        writeln!(file).unwrap(); // blank line
-    }
-
-    if tickets.is_empty() {
-        writeln!(file, "_No tickets found._").unwrap();
-    }
 }

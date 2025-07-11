@@ -4,6 +4,7 @@ use std::env;
 
 use crate::{ticket::Ticket, storage::{load_tickets, save_tickets}};
 use crate::error::handle_db_err;
+use crate::utils::{prompt, export_to_markdown};
 
 /// Handle CLI arguments. Returns `true` if a CLI command was executed.
 ///
@@ -74,7 +75,7 @@ pub fn handle_args() -> bool {
                             println!("1. Open");
                             println!("2. In Progress");
                             println!("3. Closed");
-                            let status_choice = crate::main::prompt("Choice: ");
+                            let status_choice = prompt("Choice: ");
                             let new_status = match status_choice.trim() {
                                 "1" => "Open",
                                 "2" => "In Progress",
@@ -112,7 +113,6 @@ pub fn handle_args() -> bool {
                     true
                 },
                 Some("export") => {
-                    use crate::main::export_to_markdown;
                     let tickets = handle_db_err(load_tickets()).unwrap_or_default();
                     export_to_markdown(&tickets);
                     println!("Tickets exported to tickets.md");
