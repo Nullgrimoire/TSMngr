@@ -1,3 +1,5 @@
+//! Main entry point and interactive menu for the Ticket System Manager.
+
 mod ticket;
 mod storage;
 mod cli;
@@ -8,7 +10,7 @@ use storage::{init_db, load_tickets, save_tickets};
 
 use std::io::{self, Write};
 
-
+/// The main function initializes the database, handles CLI arguments, and runs the interactive menu loop.
 fn main() {
     let _ = init_db();
     if cli::handle_args() {
@@ -143,6 +145,7 @@ fn main() {
     }
 }
 
+/// Prompt the user for input with a message and return the trimmed response.
 fn prompt(message: &str) -> String {
     print!("{}", message);
     io::stdout().flush().unwrap();
@@ -152,11 +155,13 @@ fn prompt(message: &str) -> String {
     input.trim().to_string()
 }
 
-//utility functions
+/// Clear the terminal screen (works on Unix/Linux/macOS).
 fn clear_screen() {
     // Works on Unix (Linux/macOS)
     print!("\x1B[2J\x1B[1;1H");
 }
+
+/// Return a colored string for the ticket status.
 fn color_status(status: &str) -> String {
     match status {
         "Open" => format!("\x1b[32m{}\x1b[0m", status),         // Green
@@ -165,15 +170,18 @@ fn color_status(status: &str) -> String {
         _ => status.to_string(),
     }
 }
+
+/// Pause and wait for the user to press Enter.
 fn pause() {
     println!("\nPress Enter to return to menu...");
     let _ = std::io::stdin().read_line(&mut String::new());
 }
 
-//Markdown Export
-use std::fs::File;
-
+/// Export the given tickets to a Markdown file (tickets.md).
 fn export_to_markdown(tickets: &[Ticket]) {
+    use std::fs::File;
+    use std::io::Write;
+
     let mut file = File::create("tickets.md").expect("Failed to create file");
 
     writeln!(file, "# 🎟️ Ticket List\n").unwrap();

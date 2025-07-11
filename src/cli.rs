@@ -1,9 +1,21 @@
+//! Command-line interface (CLI) for ticket management.
+
 use std::env;
 
 use crate::{ticket::Ticket, storage::{load_tickets, save_tickets}};
 use crate::error::handle_db_err;
 
 /// Handle CLI arguments. Returns `true` if a CLI command was executed.
+///
+/// Supported commands:
+/// - ticket new <title> <description>
+/// - ticket list
+/// - ticket show <id>
+/// - ticket update <id>
+/// - ticket delete <id>
+/// - ticket export
+/// - ticket seed
+/// - ticket help
 pub fn handle_args() -> bool {
     let mut args = env::args().skip(1);
     match args.next().as_deref() {
@@ -123,6 +135,7 @@ pub fn handle_args() -> bool {
     }
 }
 
+/// Print help for all available ticket CLI commands.
 fn print_ticket_help() {
     println!("Ticket commands:");
     println!("  ticket new <title> <description>");

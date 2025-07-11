@@ -1,3 +1,5 @@
+//! Database storage and persistence for tickets and users.
+
 use rusqlite::{params, Connection};
 use crate::ticket::Ticket;
 use std::error::Error;
@@ -11,6 +13,7 @@ pub fn get_connection() -> Result<Connection, Box<dyn Error>> {
     Connection::open(DB_PATH).map_err(|e| e.into())
 }
 
+/// Initialize the database tables if they do not exist.
 pub fn init_db() -> Result<(), Box<dyn Error>> {
     let conn = get_connection()?;
     conn.execute(
@@ -42,6 +45,7 @@ pub fn init_db() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+/// Save all tickets to the database, replacing any existing records.
 pub fn save_tickets(tickets: &Vec<Ticket>) -> Result<(), Box<dyn Error>> {
     let mut conn = get_connection()?;
     let tx = conn.transaction()?;
@@ -56,6 +60,7 @@ pub fn save_tickets(tickets: &Vec<Ticket>) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+/// Load all tickets from the database.
 pub fn load_tickets() -> Result<Vec<Ticket>, Box<dyn Error>> {
     init_db()?;
     let conn = get_connection()?;
@@ -72,6 +77,7 @@ pub fn load_tickets() -> Result<Vec<Ticket>, Box<dyn Error>> {
     Ok(tickets)
 }
 
+/// Insert sample users and tickets into the database for demonstration.
 pub fn seed_sample_data() -> Result<(), Box<dyn Error>> {
     let conn = get_connection()?;
     // Insert sample users
