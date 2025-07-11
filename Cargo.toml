@@ -8,9 +8,13 @@ description = "A CLI-based ticket system manager built in Rust"
 license = "MIT"
 repository = "https://github.com/Nullgrimoire/TSMngr"
 readme = "README.md"
+build = "build.rs"
 
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 uuid = { version = "1.7", features = ["v4"] }
 rusqlite = { version = "0.30", features = ["bundled"] }
+
+[build-dependencies]
+embed-resource = "2.4"

@@ -12,6 +12,16 @@ tickets.json
 /target/
 /Cargo.lock
 
+# Additional Rust build and release artifacts
+/dist/
+/coverage/
+/htmlcov/
+*.lcov
+*.profraw
+*.out
+*.pid
+*.seed
+
 # IDEs and OS
 *.DS_Store
 *.swp
@@ -21,3 +31,23 @@ tickets.json
 .idea/
 .vscode/
 *.db
+
+# Windows resource and build artifacts
+*.rc
+/build.rs
+
+# OS/Editor/IDE files
+Thumbs.db
+ehthumbs.db
+*.sublime-workspace
+*.sublime-project
+
+# Environment files
+.env
+.env.*
+
+# CI/CD and config
+.github/
+.circleci/
+.gitlab-ci.yml
+.travis.yml
