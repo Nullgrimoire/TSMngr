@@ -8,11 +8,10 @@ on:
 permissions:
   contents: write
   actions: read
-  checks: read
 
 jobs:
   build:
-    name: Build ${{ matrix.target }}
+    name: Build ${{ matrix.ext }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -21,16 +20,21 @@ jobs:
             target: x86_64-unknown-linux-gnu
             bin_name: tsmngr
             ext: Linux
-          - os: windows-latest
+          - os: ubuntu-latest
             target: x86_64-pc-windows-gnu
             bin_name: tsmngr.exe
             ext: Windows
+          # Optional: Add macOS support
+          # - os: macos-latest
+          #   target: x86_64-apple-darwin
+          #   bin_name: tsmngr
+          #   ext: macOS
 
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
 
-      - name: ⚡ Cache cargo registry
+      - name: ⚡ Cache Cargo registry and build
         uses: actions/cache@v4
         with:
           path: |
@@ -41,53 +45,32 @@ jobs:
 
       - name: 🛠️ Install Rust target
         run: rustup target add ${{ matrix.target }}
-      - name: 🛠 Install Windows target (Linux only)
-        if: runner.os == 'Linux' && matrix.target == 'x86_64-pc-windows-gnu'
-        run: rustup target add x86_64-pc-windows-gnu
-      - name: 🛠 Install MinGW toolchain (Linux only)
+
+      - name: 🛠 Install MinGW toolchain (only on Linux for Windows build)
         if: runner.os == 'Linux' && matrix.target == 'x86_64-pc-windows-gnu'
         run: sudo apt-get update && sudo apt-get install -y mingw-w64
 
-      # - name: 🧪 Run tests
-      #   run: cargo test --release --target ${{ matrix.target }}
+      - name: 🧪 Run tests
+        run: cargo test --release --target ${{ matrix.target }}
 
       - name: 📦 Build binary
         run: cargo build --release --target ${{ matrix.target }}
 
       - name: 🧹 Clean release folder (Linux/macOS)
-        run: rm -rf release
         if: runner.os != 'Windows'
+        run: rm -rf release
 
-      - name: 🧹 Clean release folder (Windows)
-        shell: pwsh
-        run: Remove-Item -Recurse -Force release -ErrorAction SilentlyContinue
-        if: runner.os == 'Windows'
-
-      - name: 🗃️ Prepare release folder
+      - name: 🗃️ Prepare release folder (Linux/macOS)
+        if: runner.os != 'Windows'
         run: |
           mkdir release
           cp README.md LICENSE CHANGELOG.md release/
           if [ -f tickets.md ]; then cp tickets.md release/; fi
           cp target/${{ matrix.target }}/release/${{ matrix.bin_name }} release/
-        if: runner.os != 'Windows'
-
-      - name: 🗃️ Prepare release folder (Windows)
-        shell: pwsh
-        run: |
-          New-Item -ItemType Directory -Path release
-          Copy-Item README.md, LICENSE, CHANGELOG.md -Destination release
-          if (Test-Path tickets.md) { Copy-Item tickets.md -Destination release }
-          Copy-Item "target\${{ matrix.target }}\release\${{ matrix.bin_name }}" -Destination release
-        if: runner.os == 'Windows'
 
       - name: 🧙‍♂️ Zip release files (Linux/macOS)
-        run: zip -r TSMngr-${{ github.ref_name }}-${{ matrix.ext }}.zip release
         if: runner.os != 'Windows'
-
-      - name: 🧙‍♂️ Zip release files (Windows)
-        shell: pwsh
-        run: Compress-Archive -Path release\* -DestinationPath TSMngr-${{ github.ref_name }}-${{ matrix.ext }}.zip
-        if: runner.os == 'Windows'
+        run: zip -r TSMngr-${{ github.ref_name }}-${{ matrix.ext }}.zip release
 
       - name: 🚀 Upload release asset
         uses: softprops/action-gh-release@v2
