@@ -75,4 +75,6 @@ fn print_ticket_help() {
     println!("  ticket new <title> <description>");
     println!("  ticket list");
     println!("  ticket show <id>");
+    println!("  ticket seed");
+    println!("  ticket help");
 }
