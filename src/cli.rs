@@ -1,6 +1,7 @@
 use std::env;
 
 use crate::{ticket::Ticket, storage::{load_tickets, save_tickets}};
+use crate::error::handle_db_err;
 
 /// Handle CLI arguments. Returns `true` if a CLI command was executed.
 pub fn handle_args() -> bool {
@@ -17,15 +18,15 @@ pub fn handle_args() -> bool {
                         }
                     };
                     let description = args.next().unwrap_or_else(|| "".to_string());
-                    let mut tickets = load_tickets();
+                    let mut tickets = handle_db_err(load_tickets()).unwrap_or_default();
                     let ticket = Ticket::new(&title, &description);
                     tickets.push(ticket.clone());
-                    save_tickets(&tickets);
+                    let _ = handle_db_err(save_tickets(&tickets));
                     println!("Created ticket {} ({})", ticket.title, ticket.id);
                     true
                 }
                 Some("list") => {
-                    let tickets = load_tickets();
+                    let tickets = handle_db_err(load_tickets()).unwrap_or_default();
                     if tickets.is_empty() {
                         println!("No tickets found.");
                     } else {
@@ -37,7 +38,7 @@ pub fn handle_args() -> bool {
                 }
                 Some("show") => {
                     if let Some(id) = args.next() {
-                        let tickets = load_tickets();
+                        let tickets = handle_db_err(load_tickets()).unwrap_or_default();
                         match tickets.iter().find(|t| t.id == id) {
                             Some(t) => {
                                 println!("ID: {}", t.id);
