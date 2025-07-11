@@ -6,6 +6,14 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [v1.1.1] - 2025-07-11
+
+### Improved
+
+- 🛠️ GitHub Actions workflow now installs MinGW and Windows target on Linux runners for reliable cross-compiling of Windows binaries.
+
+---
+
 ## [v1.1.0-alpha] - 2025-07-11
 
 ### Added

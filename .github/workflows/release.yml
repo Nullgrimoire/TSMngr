@@ -41,6 +41,12 @@ jobs:
 
       - name: 🛠️ Install Rust target
         run: rustup target add ${{ matrix.target }}
+      - name: 🛠 Install Windows target (Linux only)
+        if: runner.os == 'Linux' && matrix.target == 'x86_64-pc-windows-gnu'
+        run: rustup target add x86_64-pc-windows-gnu
+      - name: 🛠 Install MinGW toolchain (Linux only)
+        if: runner.os == 'Linux' && matrix.target == 'x86_64-pc-windows-gnu'
+        run: sudo apt-get update && sudo apt-get install -y mingw-w64
 
       # - name: 🧪 Run tests
       #   run: cargo test --release --target ${{ matrix.target }}

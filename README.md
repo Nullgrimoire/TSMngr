@@ -84,6 +84,21 @@ Binary output will be in:
 
 ---
 
+## 🖥️ Cross-Compiling for Windows
+
+Windows binaries are built automatically using GitHub Actions. On Linux runners, the workflow installs the Windows target and MinGW toolchain:
+
+```yaml
+- name: Install Windows target
+  run: rustup target add x86_64-pc-windows-gnu
+- name: Install MinGW toolchain
+  run: sudo apt-get update && sudo apt-get install -y mingw-w64
+```
+
+This ensures reliable cross-platform releases for both Linux and Windows users.
+
+---
+
 ## 📁 Data Storage
 
 - Ticket data is saved in `tickets.db`
